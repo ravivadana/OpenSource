@@ -1,0 +1,57 @@
+  <div class="div-table">
+             <div class="div-table-row">
+                <div class="div-table-col" align="center">Subject</div>
+                <div  class="div-table-col">:</div>
+                <div  class="div-table-col">
+                    <select [ngModel]="selectedSubject" (ngModelChange)="onSubjecthange($event)" name="sel1">
+                        <option [value]="subject.id" *ngFor="let subject of subjects">{{subject.name}}</option>
+                    </select>
+                </div>
+             </div>
+              <div class="div-table-row" *ngIf="selectedSubject.id">
+                <div class="div-table-col" align="center">Test</div>
+                <div  class="div-table-col">:</div>
+                <div  class="div-table-col">
+                   <select [ngModel]="selectedTest" (ngModelChange)="onTestChange($event)" name="sel2">
+                        <option [value]="test.id" *ngFor="let test of tests">{{test.name}}</option>
+                    </select>
+                </div>
+             </div>
+             <div class="div-table-row" *ngIf="selectedTest.id">
+                 <div class="div-table-col" align="center">Test Duration:</div>
+                 <div class="div-table-col" align="center">{{selectedTest.test_duration}}</div>
+             </div>
+              <div class="div-table-row" *ngIf="selectedTest.id>0">
+                <div class="div-table-col answer-box" align="center" *ngFor="let answer of answers" [ngClass]="answer.answerd?'answerd':''">
+                    {{answer.questionid}}
+                </div>
+             </div>
+    </div>
+
+    <div class="div-table" *ngIf="showtimer">
+        <div class="div-table-row">
+            <div class='div-table-col-circle'> {{hours}}H</div> 
+            <div class="div-table-col-circle">{{minutes}}M </div> 
+            <div class="div-table-col-circle">{{seconds}}S </div>
+        </div>
+        <div class="div-table-row" *ngIf="showtimer">
+            <div class="div-table-col" align="center" *ngIf="showtimer">
+                    <span>{{qid}})</span> {{active_question.text}}
+            </div>
+        </div>
+        <div class="div-table-row" *ngIf="showtimer">
+                <div  class="div-table-col">
+                  <ul>
+                    <li *ngFor="let answeroption of active_question.answeroptions">
+                        <input type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio">{{answeroption.text}}
+                    </li>  
+                   </ul>
+                </div>
+       </div>
+    </div>
+<div>
+     <input type="button" id="btnStart" value="Start" (click)="startTest()" *ngIf="showStart" />
+     <input type="button" id="btnPreviouse" value="Previuse" (click)="goPreviouse()" *ngIf="qid>1" />
+     <input type="button" id="btnNext" value="Next" (click)="goNext()" *ngIf="showtimer" />
+</div>
+ <br/><br/><br/>

@@ -1,0 +1,156 @@
+<div style="margin:2px;">
+    <div *ngIf="!isSaved">
+    <table cellpadding="2" cellspacing="2">
+    <tr>
+        <td>Subject</td>
+        <td>
+        <select [ngModel]="selectedSubject" (ngModelChange)="onSubjecthange($event)" name="sel1">
+                            <option [value]="subject.id" *ngFor="let subject of subjects">{{subject.name}}</option>
+                        </select>
+        </td>
+    </tr>
+    <tr *ngIf="selectedSubject.id">
+            <td>Test</td>
+            <td>
+                <select [ngModel]="selectedTest" (ngModelChange)="onTestChange($event)" name="sel2">
+                                <option [value]="test.id" *ngFor="let test of tests">{{test.name}}</option>
+                            </select>
+            </td>
+    </tr>
+    <tr *ngIf="selectedTest.id">
+            <td>Test Duration</td>
+            <td>
+                {{selectedTest.test_duration}}
+            </td>
+    </tr>
+    </table>  
+    <div class="div-table">
+                <div class="div-table-row" *ngIf="selectedTest.id>0">
+                    <div class="div-table-col answer-box" (click)="goToSpecificQuestion(answer.questionindex)"  align="center" *ngFor="let answer of answers;let i = index;" [ngClass]="answer.answerd?'answerd':''">
+                    <span id="{{answer.answeroption}}"> {{answer.questionindex}} </span>
+                    </div>
+                </div>
+    </div>
+
+    <div class="div-table" *ngIf="showtimer">
+            <div class="timer">
+                <div class='div-table-col-circle'> {{hours}}H</div> 
+                <div class="div-table-col-circle">{{minutes}}M </div> 
+                <div class="div-table-col-circle">{{seconds}}S </div>
+            </div>
+            <div class="div-table-row" *ngIf="showtimer">
+                <div class="div-table-col" align="center" *ngIf="showtimer">
+                        <span>{{qindex}})</span> {{active_question.text}}
+                </div>
+                <div class="div-table-col" style="float:right;">
+                  <input type="checkbox"  [checked]="active_question.marked" (click)="markForReview()" /> Mark for review
+                </div>
+            </div>
+            <div class="div-table-row" *ngIf="showtimer">
+                    <div  class="div-table-col">
+                    <ul>
+                        <li *ngFor="let answeroption of active_question.answeroptions;let i=index;">
+                        <div *ngIf="i+1==active_question.selectedAnswerId">
+                            <input checked="checked"  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio">{{answeroption.text}}
+                        </div>
+                        <div *ngIf="i+1!=active_question.selectedAnswerId">
+                            <input  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio">{{answeroption.text}} 
+                        </div>
+                        </li>  
+                    </ul>
+            </div>
+        </div>
+    </div>
+    <div>
+        <input type="button" id="btnStart" value="Start" (click)="startTest()" *ngIf="showStart" />
+        <input type="button" id="btnPreviouse" value="Previuse" (click)="goPreviouse()" *ngIf="qindex>1" />
+        <span *ngIf="showtimer">
+            <input type="button" id="btnNext" value="Next" (click)="goNext()" *ngIf="qindex<test_total_question" />
+            <input type="button" id="btnClearAnswer" value="Clear Answer" (click)="clearAnswer()"/>       
+            <input type="button" id="btnsubmit" value="Submit" (click)="saveAnswerSheet()"/>
+        </span>
+    </div>
+   </div> 
+   <div class="testreview" *ngIf="isSaved">
+       <fieldset>
+           <legend><strong>Review Your Answers</strong></legend>
+       <div class="div-table-row" *ngFor="let answer of answers;let i=index;">
+                <div class="div-table-col"  *ngIf="answer.answerd==true || answer.marked==true">
+                    <div *ngIf="answer.answerd && answer.marked" class="higlight">
+                       <span>{{answer.questionindex}})</span> {{answer.question}}
+                        <ul>
+                            <li *ngFor="let answeroption of answer.answeroptions;let j=index;">
+                                <div *ngIf="j+1==answer.answeroption">
+                                    <input checked="checked"  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio_{{i}}">{{answeroption.text}}
+                                </div>
+                                <div *ngIf="j+1!=answer.answeroption">
+                                    <input  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio_{{i}}">{{answeroption.text}} 
+                                </div>
+                           </li>  
+                       </ul>
+                    </div>
+                 <div *ngIf="!answer.answerd && answer.marked" class="higlight">
+                       <span>{{answer.questionindex}})</span> {{answer.question}}
+                        <ul>
+                            <li *ngFor="let answeroption of answer.answeroptions;let j=index;">
+                                <div *ngIf="j+1==answer.answeroption">
+                                    <input checked="checked"  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio_{{i}}">{{answeroption.text}}
+                                </div>
+                                <div *ngIf="j+1!=answer.answeroption">
+                                    <input  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio_{{i}}">{{answeroption.text}} 
+                                </div>
+                           </li>  
+                       </ul>
+                    </div>
+                <div *ngIf="answer.answerd && !answer.marked">
+                       <span>{{answer.questionindex}})</span> {{answer.question}}
+                        <ul>
+                            <li *ngFor="let answeroption of answer.answeroptions;let j=index;">
+                                <div *ngIf="j+1==answer.answeroption">
+                                    <input checked="checked"  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio_{{i}}">{{answeroption.text}}
+                                </div>
+                                <div *ngIf="j+1!=answer.answeroption">
+                                    <input  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio_{{i}}">{{answeroption.text}} 
+                                </div>
+                           </li>  
+                       </ul>
+                    </div>
+                 <div *ngIf="!answer.answerd && !answer.marked">
+                       <span>{{answer.questionindex}})</span> {{answer.question}}
+                        <ul>
+                            <li *ngFor="let answeroption of answer.answeroptions;let j=index;">
+                                <div *ngIf="j+1==answer.answeroption">
+                                    <input checked="checked"  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio_{{i}}">{{answeroption.text}}
+                                </div>
+                                <div *ngIf="j+1!=answer.answeroption">
+                                    <input  type="radio" value="{{answeroption.id}}" (click)="selectedAnswer(answeroption.id)" name="qradio_{{i}}">{{answeroption.text}} 
+                                </div>
+                           </li>  
+                       </ul>
+                    </div>
+                </div>
+        </div>
+     </fieldset>
+   </div>
+    <div class="result" *ngIf="isCompleted">
+        <table cellpadding="2" cellspacing="2" style="width:100%;">
+            <tr>
+                <td>Total Questions</td>
+                <td>{{testResult.total_questions}}</td>
+            </tr>
+            <tr>
+                <td>Total Questions Answered</td>
+                <td>{{testResult.answered_questions}}</td>
+            </tr>
+            <tr>
+                <td>Total Correct Answers</td>
+                <td>{{testResult.correct_answers}}</td>
+            </tr>
+            <tr>
+                <td>Result Percentage</td>
+                 <td>{{testResult.result_percentage}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+ <br/><br/><br/>
